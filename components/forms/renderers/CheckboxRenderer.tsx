@@ -12,7 +12,7 @@ interface CheckboxRendererProps extends BaseRendererProps {
   data: string[];
 }
 
-const CheckboxRenderer = ({
+const CheckboxRenderer = React.memo(({
   data,
   handleChange,
   path,
@@ -96,7 +96,7 @@ const CheckboxRenderer = ({
       )}
     </div>
   );
-};
+});
 
 export const checkboxControlTester = rankWith(
   4,

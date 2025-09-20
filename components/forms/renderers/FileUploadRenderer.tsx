@@ -12,7 +12,7 @@ interface FileUploadRendererProps extends BaseRendererProps {
   data: string;
 }
 
-const FileUploadRenderer = ({
+const FileUploadRenderer = React.memo(({
   data,
   handleChange,
   path,
@@ -107,7 +107,7 @@ const FileUploadRenderer = ({
       )}
     </div>
   );
-};
+});
 
 export const fileUploadControlTester = rankWith(
   10,

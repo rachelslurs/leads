@@ -11,7 +11,7 @@ interface SelectRendererProps extends BaseRendererProps {
   data: string;
 }
 
-const SelectRenderer = ({
+const SelectRenderer = React.memo(({
   data,
   handleChange,
   path,
@@ -39,7 +39,7 @@ const SelectRenderer = ({
           aria-label={accessibleLabel}
           aria-required={isRequired}
           aria-invalid={errorState.hasError ? 'true' : 'false'}
-          className={`w-full px-4 py-3 border border-solid rounded-md focus:outline-none focus:border-alma-gray transition-colors appearance-none bg-white ${
+          className={`w-full px-4 py-3 border border-solid rounded-md focus:border-transparent transition-colors appearance-none bg-white ${
             errorState.hasError ? 'border-alma-error' : 'border-gray-300'
           } ${!data ? 'text-gray-400' : 'text-alma-gray'}`}
           style={{
@@ -62,7 +62,7 @@ const SelectRenderer = ({
       )}
     </div>
   );
-};
+});
 
 export const selectControlTester = rankWith(
   3,

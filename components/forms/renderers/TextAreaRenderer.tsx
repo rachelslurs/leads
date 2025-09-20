@@ -11,7 +11,7 @@ interface TextAreaRendererProps extends BaseRendererProps {
   data: string;
 }
 
-const TextAreaRenderer = ({
+const TextAreaRenderer = React.memo(({
   data,
   handleChange,
   path,
@@ -40,7 +40,7 @@ const TextAreaRenderer = ({
         aria-label={accessibleLabel}
         aria-required={isRequired}
         aria-invalid={errorState.hasError ? 'true' : 'false'}
-        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-alma-purple focus:border-transparent transition-colors resize-vertical text-alma-gray placeholder-gray-400 ${
+        className={`w-full px-4 py-3 border rounded-lg focus:border-transparent transition-colors resize-vertical text-alma-gray placeholder-gray-400 ${
           errorState.hasError ? 'border-alma-error' : 'border-gray-300'
         }`}
       />
@@ -51,7 +51,7 @@ const TextAreaRenderer = ({
       )}
     </div>
   );
-};
+});
 
 export const textAreaControlTester = rankWith(
   2,

@@ -1,6 +1,7 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 interface SearchAndFilterProps {
   searchQuery: string;
@@ -15,6 +16,23 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   statusFilter,
   onStatusFilterChange,
 }) => {
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+  const debouncedSearchQuery = useDebounce(localSearchQuery, 300);
+
+  // Update parent when debounced value changes
+  useEffect(() => {
+    onSearchChange(debouncedSearchQuery);
+  }, [debouncedSearchQuery, onSearchChange]);
+
+  // Sync local state when parent search query changes
+  useEffect(() => {
+    setLocalSearchQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleSearchChange = (value: string) => {
+    setLocalSearchQuery(value);
+  };
+
   return (
     <div className="mb-6 flex items-center space-x-4">
       {/* Search Bar */}
@@ -25,9 +43,9 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         <input
           type="text"
           placeholder="Search"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          value={localSearchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-alma-purple focus:border-alma-purple sm:text-sm"
         />
       </div>
 
@@ -36,7 +54,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         <select
           value={statusFilter}
           onChange={(e) => onStatusFilterChange(e.target.value)}
-          className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-alma-purple focus:border-alma-purple"
         >
           <option value="ALL">Status</option>
           <option value="PENDING">Pending</option>

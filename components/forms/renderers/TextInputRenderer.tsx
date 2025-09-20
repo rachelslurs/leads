@@ -79,7 +79,7 @@ const TextInputRenderer = React.memo(function TextInputRenderer({
         aria-label={accessibleLabel}
         aria-required={isRequired}
         aria-invalid={hasError ? 'true' : 'false'}
-        className={`w-full px-4 py-3 border border-solid rounded-md focus:outline-none focus:border-alma-gray transition-colors text-alma-gray placeholder-gray-400 bg-white ${
+        className={`w-full px-4 py-3 border border-solid rounded-md focus:border-transparent transition-colors text-alma-gray placeholder-gray-400 bg-white ${
           hasError ? 'border-alma-error' : 'border-gray-300'
         }`}
         style={{
