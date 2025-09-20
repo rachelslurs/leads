@@ -6,6 +6,7 @@ import { useFormContext } from '../FormContext';
 import { BaseRendererProps, UISchemaElementWithScope, JsonSchemaWithCustom, hasFileUploadProperty, hasEnumProperty } from './types';
 import { getErrorState, createAccessibleLabel } from './errorUtils';
 import { validateUrl as validateUrlUtil } from '@/lib/validation/validators';
+import { ERROR_MESSAGES, FORM_PLACEHOLDERS, ACCESSIBILITY_LABELS } from '@/lib/constants/formText';
 
 interface TextInputRendererProps extends BaseRendererProps {
   data: string;
@@ -32,7 +33,7 @@ const TextInputRenderer = React.memo(function TextInputRenderer({
       // Use centralized validation
       const result = validateUrlUtil(url);
       if (!result.isValid) {
-        setCustomError(result.errorMessage || 'Invalid URL');
+        setCustomError(result.errorMessage || ERROR_MESSAGES.invalidUrl);
         return false;
       } else {
         setCustomError('');
@@ -47,14 +48,12 @@ const TextInputRenderer = React.memo(function TextInputRenderer({
   const fieldName = path.split('.').pop() || '';
   const errorState = getErrorState(fieldName, data, errors, context, customError);
   
-  // For email fields, always show errors when there are validation errors
-  const shouldShowError = errorState.shouldShowError || (schema.format === 'email' && data && data.length > 0);
-  const hasError = schema.format === 'email' ? 
-    (!!context.serverErrors[fieldName] || (errors.length > 0 && shouldShowError) || (customError !== '' && shouldShowError)) : 
-    errorState.hasError;
+  // Use JSON Forms error handling with our custom error processing
+  const shouldShowError = errorState.shouldShowError;
+  const hasError = errorState.hasError;
   
   // Create accessible label
-  const accessibleLabel = createAccessibleLabel(schema.title || '', isRequired);
+  const accessibleLabel = ACCESSIBILITY_LABELS.createLabel(schema.title || '', isRequired);
 
   return (
     <div className="mb-4">
@@ -90,9 +89,9 @@ const TextInputRenderer = React.memo(function TextInputRenderer({
       {hasError && (
         <p className="mt-1 text-sm text-alma-error">
           {errorState.errorMessage || 
-           (schema.format === 'uri' ? 'Please enter a valid URL' : 
-            schema.format === 'email' ? 'Please enter a valid email address' :
-            `${schema.title} is required`)}
+           (schema.format === 'uri' ? ERROR_MESSAGES.invalidUrl : 
+            schema.format === 'email' ? ERROR_MESSAGES.invalidEmail :
+            ERROR_MESSAGES.requiredField(schema.title || 'This field'))}
         </p>
       )}
     </div>

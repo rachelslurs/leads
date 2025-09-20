@@ -1,5 +1,6 @@
 // Form change handler utilities
-import { FormChangeEvent } from './renderers/types';
+import { FormChangeEvent, getErrorMessage, FormError } from './renderers/types';
+import { ERROR_MESSAGES } from '@/lib/constants/formText';
 
 export interface FormChangeHandlerConfig {
   data: Record<string, unknown>;
@@ -45,32 +46,33 @@ export function createFormChangeHandler({
           const errorObj = error as { instancePath?: string; message?: string };
           if (errorObj.instancePath) {
             const field = errorObj.instancePath.replace('#/', '').replace(/\//g, '.');
-            errorMap[field] = errorObj.message || 'Invalid value';
+            errorMap[field] = getErrorMessage(errorObj as FormError) || ERROR_MESSAGES.invalidValue;
           }
         }
       });
     }
 
-    // Clear errors for fields that are no longer invalid
+    // Update errors - replace existing errors with new ones
     setErrors((prev: Record<string, string>) => {
-      const newErrors = { ...prev };
-      // Remove errors for fields that are no longer in the error list
-      // Also remove errors for fields that have been fixed (have valid content)
-      Object.keys(newErrors).forEach(field => {
-        if (!errorMap[field] && newData[field] !== undefined && newData[field] !== '') {
-          // Check if the field is now valid (not empty and no validation errors)
+      // Start with new errors from JsonForms validation
+      const newErrors = { ...errorMap };
+      
+      // For fields that don't have new errors, check if they should keep their existing errors
+      Object.keys(prev).forEach(field => {
+        if (!errorMap[field] && prev[field]) {
           const fieldValue = newData[field];
-          const isValid = fieldValue !== null && fieldValue !== undefined &&
+          const hasValidContent = fieldValue !== null && fieldValue !== undefined &&
             (typeof fieldValue === 'string' ? fieldValue.trim() !== '' : true) &&
             (Array.isArray(fieldValue) ? fieldValue.length > 0 : true);
-
-          if (isValid) {
-            delete newErrors[field];
+          
+          // Keep the error only if the field doesn't have valid content
+          if (!hasValidContent) {
+            newErrors[field] = prev[field];
           }
         }
       });
-      // Add new errors
-      return { ...newErrors, ...errorMap };
+      
+      return newErrors;
     });
   };
 }

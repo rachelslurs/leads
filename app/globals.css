@@ -14,6 +14,7 @@
   
   --background-image-lime-gradient: linear-gradient(135deg, #E0F0BC 0%, transparent 100%);
   --background-image-purple-gradient: linear-gradient(135deg, #d1cfff 0%, #CE93D8 100%);
+  --background-image-radial-lime: radial-gradient(ellipse at center top, var(--color-alma-lime) 0%, var(--color-alma-lime) 25%, rgba(224, 240, 188, 0.6) 45%, rgba(224, 240, 188, 0.2) 65%, transparent 85%);
 }
 
 :root {

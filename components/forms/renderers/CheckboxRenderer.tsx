@@ -6,6 +6,7 @@ import { Check } from 'lucide-react';
 import { useFormContext } from '../FormContext';
 import { BaseRendererProps, UISchemaElementWithScope, JsonSchemaWithCustom, isArraySchema, hasEnumProperty } from './types';
 import { getErrorState } from './errorUtils';
+import { ERROR_MESSAGES } from '@/lib/constants/formText';
 
 interface CheckboxRendererProps extends BaseRendererProps {
   data: string[];
@@ -84,7 +85,7 @@ const CheckboxRenderer = ({
 
       {errorState.hasError && (
         <p id={`${path}-error`} className="mt-2 text-sm text-alma-error">
-          {errorState.errorMessage || 'Please select at least one visa type'}
+          {errorState.errorMessage || ERROR_MESSAGES.selectAtLeastOneVisa}
         </p>
       )}
 

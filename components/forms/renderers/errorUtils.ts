@@ -1,5 +1,6 @@
 import { FormContextType } from '../FormContext';
 import { FormError, getErrorMessage } from './types';
+import { ACCESSIBILITY_LABELS } from '@/lib/constants/formText';
 
 export interface ErrorState {
   hasError: boolean;
@@ -30,7 +31,14 @@ export function getErrorState(
   } else if (customError) {
     errorMessage = customError;
   } else if (Array.isArray(errors) && errors.length > 0) {
-    errorMessage = getErrorMessage(errors[0] as FormError);
+    // Process each error and get the first valid error message
+    for (const error of errors) {
+      const processedMessage = getErrorMessage(error as FormError);
+      if (processedMessage) {
+        errorMessage = processedMessage;
+        break;
+      }
+    }
   } else if (errors) {
     errorMessage = getErrorMessage(errors as FormError);
   }
@@ -43,5 +51,5 @@ export function getErrorState(
 }
 
 export function createAccessibleLabel(title: string, isRequired: boolean): string {
-  return `${title}${isRequired ? ' (required)' : ''}`;
+  return ACCESSIBILITY_LABELS.createLabel(title, isRequired);
 }

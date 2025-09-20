@@ -5,6 +5,7 @@ import { withJsonFormsControlProps } from '@jsonforms/react';
 import { useFormContext } from '../FormContext';
 import { BaseRendererProps, UISchemaElementWithScope, JsonSchemaWithCustom } from './types';
 import { getErrorState, createAccessibleLabel } from './errorUtils';
+import { ERROR_MESSAGES } from '@/lib/constants/formText';
 
 interface TextAreaRendererProps extends BaseRendererProps {
   data: string;
@@ -45,7 +46,7 @@ const TextAreaRenderer = ({
       />
       {errorState.hasError && (
         <p className="mt-1 text-sm text-alma-error">
-          {errorState.errorMessage || `${schema.title} is required`}
+          {errorState.errorMessage || ERROR_MESSAGES.requiredField(schema.title || 'This field')}
         </p>
       )}
     </div>

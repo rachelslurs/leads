@@ -50,12 +50,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div className="relative flex-1">
           {/* Radial gradient background that radiates from logo */}
           <div 
-            className="absolute inset-0"
-            style={{
-              background: 'radial-gradient(ellipse at center top, #d9dea5 0%, #d9dea5 25%, rgba(217, 222, 165, 0.6) 45%, rgba(217, 222, 165, 0.2) 65%, transparent 85%)',
-              width: '100%',
-              height: '180px'
-            }}
+            className="absolute inset-0 w-full h-[180px] bg-radial-lime"
           ></div>
           
           {/* Logo Section */}

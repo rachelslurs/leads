@@ -11,6 +11,7 @@ import { FormData as FormDataType, FormChangeHandler, createJsonFormsChangeHandl
 import { JsonSchema } from '@jsonforms/core';
 import { createFormChangeHandler } from './formHandlers';
 import { isErrorWithData, isErrorWithMessage } from '@/lib/utils/typeGuards';
+import { FORM_LABELS, ERROR_MESSAGES, FORM_TITLES, BUTTON_TEXT } from '@/lib/constants/formText';
 
 // Import custom renderers
 import TextInputRenderer, { textInputControlTester } from './renderers/TextInputRenderer';
@@ -64,27 +65,37 @@ const JsonLeadForm: React.FC = () => {
       {
         type: 'Control',
         scope: '#/properties/firstName',
-        options: { placeholder: 'First Name' },
+        options: { 
+          placeholder: 'First Name'
+        },
       },
       {
         type: 'Control',
         scope: '#/properties/lastName',
-        options: { placeholder: 'Last Name' },
+        options: { 
+          placeholder: 'Last Name'
+        },
       },
       {
         type: 'Control',
         scope: '#/properties/email',
-        options: { placeholder: 'Email' },
+        options: { 
+          placeholder: 'Email'
+        },
       },
       {
         type: 'Control',
         scope: '#/properties/country',
-        options: { format: 'select' },
+        options: { 
+          format: 'select'
+        },
       },
       {
         type: 'Control',
         scope: '#/properties/linkedin',
-        options: { placeholder: 'Linkedin / Personal Website URL' },
+        options: { 
+          placeholder: 'Linkedin / Personal Website URL'
+        },
       },
     ]
   }), []);
@@ -105,7 +116,9 @@ const JsonLeadForm: React.FC = () => {
       {
         type: 'Control',
         scope: '#/properties/visaInterests',
-        options: { format: 'checkbox' },
+        options: { 
+          format: 'checkbox'
+        },
       },
     ]
   }), []);
@@ -129,7 +142,7 @@ const JsonLeadForm: React.FC = () => {
         scope: '#/properties/longFormInput',
         options: {
           multi: true,
-          placeholder: 'What is your current status and when does it expire? What is your past immigration history? Are you looking for long-term permanent residency or short-term employment visa or both? Are there any timeline considerations?',
+          placeholder: 'What is your current status and when does it expire? What is your past immigration history? Are you looking for long-term permanent residency or short-term employment visa or both? Are there any timeline considerations?'
         },
       },
       {
@@ -138,7 +151,7 @@ const JsonLeadForm: React.FC = () => {
         options: {
           format: 'file',
           accept: '.pdf,.doc,.docx',
-          maxSize: 5242880, // 5MB
+          maxSize: 5242880 // 5MB
         },
       },
     ]
@@ -149,7 +162,9 @@ const JsonLeadForm: React.FC = () => {
     restrict: false,
     trim: false,
     showUnfocusedDescription: true,
-    hideRequiredAsterisk: false
+    hideRequiredAsterisk: false,
+    showErrors: true, // Enable JSON Forms built-in error display
+    validate: true // Enable validation
   }), []);
 
   // Helper function to check if field has been touched
@@ -215,10 +230,49 @@ const JsonLeadForm: React.FC = () => {
     });
   }, [data]);
 
+  // Additional effect to clear errors immediately when fields become valid
+  useEffect(() => {
+    // Clear errors for fields that have been touched and now have valid content
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      let hasChanges = false;
+
+      Object.keys(prev).forEach(field => {
+        if (touchedFields.has(field)) {
+          const fieldValue = (data as Record<string, unknown>)[field];
+          const hasValidContent = fieldValue !== null && fieldValue !== undefined &&
+            (typeof fieldValue === 'string' ? fieldValue.trim() !== '' : true) &&
+            (Array.isArray(fieldValue) ? fieldValue.length > 0 : true);
+
+          if (hasValidContent && prev[field]) {
+            delete newErrors[field];
+            hasChanges = true;
+          }
+        }
+      });
+
+      return hasChanges ? newErrors : prev;
+    });
+  }, [data, touchedFields]);
+
   // Function to handle field focus - clear errors for that field
   const handleFieldFocus = (fieldName: string) => {
     if (errors[fieldName]) {
       clearFieldError(fieldName);
+    }
+  };
+
+  // Function to validate and clear errors for a specific field
+  const validateAndClearFieldError = (fieldName: string, value: unknown) => {
+    if (errors[fieldName]) {
+      // Check if the field now has valid content
+      const hasValidContent = value !== null && value !== undefined &&
+        (typeof value === 'string' ? value.trim() !== '' : true) &&
+        (Array.isArray(value) ? value.length > 0 : true);
+      
+      if (hasValidContent) {
+        clearFieldError(fieldName);
+      }
     }
   };
 
@@ -262,10 +316,10 @@ const JsonLeadForm: React.FC = () => {
       if (isErrorWithData(error) && error.data.errors && typeof error.data.errors === 'object') {
         // Server returned field-specific errors
         setErrors(error.data.errors);
-        setSubmissionError('Please fix the errors below');
+        setSubmissionError(ERROR_MESSAGES.fixErrorsBelow);
       } else {
         // Fallback to general error message
-        let errorMessage = 'Failed to submit form. Please try again.';
+        let errorMessage: string = ERROR_MESSAGES.submissionFailed;
 
         if (isErrorWithData(error) && error.data.error) {
           errorMessage = error.data.error;
@@ -330,7 +384,7 @@ const JsonLeadForm: React.FC = () => {
                   <InfoIcon className="w-6 h-6 text-alma-purple" />
                 </div>
                 <h3 className="font-bold text-alma-gray text-lg mb-2">
-                  Want to understand your visa options?
+                  {FORM_TITLES.basicInfo}
                 </h3>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed mb-8">
@@ -362,7 +416,7 @@ const JsonLeadForm: React.FC = () => {
                   <Dice5Icon className="w-6 h-6 text-alma-purple" />
                 </div>
                 <h4 className="font-bold text-alma-gray text-lg">
-                  Visa categories of interest?
+                  {FORM_TITLES.visaCategories}
                 </h4>
               </div>
               <InputWidth>
@@ -385,7 +439,7 @@ const JsonLeadForm: React.FC = () => {
                   <Heart className="w-6 h-6 text-alma-purple" />
                 </div>
                 <h4 className="font-bold text-alma-gray text-lg">
-                  How can we help you?
+                  {FORM_TITLES.helpSection}
                 </h4>
               </div>
               <InputWidth>
@@ -401,44 +455,22 @@ const JsonLeadForm: React.FC = () => {
               </InputWidth>
             </div>
 
-            {/* Show validation errors if any */}
-            {(() => {
-              const visibleErrors = Object.entries(errors).filter(([field]) =>
-                shouldShowError(field)
-              );
-
-              return visibleErrors.length > 0 && (
-                <InputWidth>
-                  <div className="mb-4 p-3 bg-red-50 border border-alma-error rounded-lg">
-                    <p className="text-sm text-alma-error font-medium mb-1">Please fix the following errors:</p>
-                    <ul className="text-sm text-alma-error list-disc list-inside">
-                      {visibleErrors.map(([field, errorMessage]) => (
-                        <li key={field}>
-                          {field}: {String(errorMessage)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </InputWidth>
-              );
-            })()}
+            {/* JSON Forms handles error display inline with each field */}
 
 
             <InputWidth>
               <button
                 onClick={handleSubmit}
-                disabled={isLoading || Object.keys(errors).some(field =>
-                  ['firstName', 'lastName', 'email', 'country', 'linkedin', 'visaInterests', 'longFormInput', 'resume'].includes(field)
-                )}
+                disabled={isLoading}
                 className="w-full mt-6 bg-alma-gray text-white py-4 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
-                    Submitting...
+                    {BUTTON_TEXT.submitting}
                   </div>
                 ) : (
-                  'Submit'
+                  BUTTON_TEXT.submit
                 )}
               </button>
             </InputWidth>
