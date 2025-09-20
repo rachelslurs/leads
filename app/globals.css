@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* Gellix Font Family - Now loaded via next/font/local */
+
+@theme {
+  --color-alma-lime: #E0F0BC;
+  --color-alma-lime-dark: #2f5b50;
+  --color-alma-purple: #8381eb;
+  --color-alma-purple-light: #d1cfff;
+  --color-alma-gray: #2E2E2E;
+  --color-alma-gray-light: #F5F5F5;
+  --color-alma-error: #c00000;
+  --color-alma-error-light: #ffe6e6;
+  
+  --background-image-lime-gradient: linear-gradient(135deg, #E0F0BC 0%, transparent 100%);
+  --background-image-purple-gradient: linear-gradient(135deg, #d1cfff 0%, #CE93D8 100%);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-gellix), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-gellix), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Custom radial gradient for Alma logo */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
